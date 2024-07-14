@@ -2,6 +2,7 @@ package com.mongo.reactive.springboot_reactive_mongo_crud_junit;
 
 import com.mongo.reactive.springboot_reactive_mongo_crud_junit.controller.ProductController;
 import com.mongo.reactive.springboot_reactive_mongo_crud_junit.dto.ProductDto;
+import com.mongo.reactive.springboot_reactive_mongo_crud_junit.entity.Product;
 import com.mongo.reactive.springboot_reactive_mongo_crud_junit.service.ProductService;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -67,13 +68,21 @@ import static org.mockito.Mockito.when;
 
 		@Test
 		public void getProductTest(){
-			Mono<ProductDto> productDtoMono=Mono.just(new ProductDto("102","mobile",1,10000));
-			when(service.getProduct(any())).thenReturn(productDtoMono);
+			//Mono<ProductDto> productDtoMono=Mono.just(new ProductDto("102","mobile",1,10000));
+			Mono<Product> product=Mono.just(new Product("102","mobile",1,10000));
 
-			Flux<ProductDto> responseBody = webTestClient.get().uri("/products/102")
+			when(service.getProduct(any())).thenReturn(product);
+
+//			Flux<ProductDto> responseBody = webTestClient.get().uri("/products/102")
+//					.exchange()
+//					.expectStatus().isOk()
+//					.returnResult(ProductDto.class)
+//					.getResponseBody();
+
+			Flux<Product> responseBody = webTestClient.get().uri("/products/102")
 					.exchange()
 					.expectStatus().isOk()
-					.returnResult(ProductDto.class)
+					.returnResult(Product.class)
 					.getResponseBody();
 
 			StepVerifier.create(responseBody)
@@ -86,8 +95,9 @@ import static org.mockito.Mockito.when;
 		@Test
 		public void updateProductTest(){
 			Mono<ProductDto> productDtoMono=Mono.just(new ProductDto("102","mobile",1,10000));
-			when(service.updateProduct(productDtoMono,"102")).thenReturn(productDtoMono);
+			Mono<Product> product=Mono.just(new Product("102","mobile",1,10000));
 
+			when(service.updateProduct(productDtoMono,"102")).thenReturn(productDtoMono);
 			webTestClient.put().uri("/products/update/102")
 					.body(Mono.just(productDtoMono),ProductDto.class)
 					.exchange()

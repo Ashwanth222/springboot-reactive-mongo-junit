@@ -1,8 +1,14 @@
 package com.mongo.reactive.springboot_reactive_mongo_crud_junit.controller;
 
 import com.mongo.reactive.springboot_reactive_mongo_crud_junit.dto.ProductDto;
+import com.mongo.reactive.springboot_reactive_mongo_crud_junit.entity.Product;
+import com.mongo.reactive.springboot_reactive_mongo_crud_junit.exception.ResourceNotFoundException;
+import com.mongo.reactive.springboot_reactive_mongo_crud_junit.repository.ProductRepository;
 import com.mongo.reactive.springboot_reactive_mongo_crud_junit.service.ProductService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -14,14 +20,18 @@ public class ProductController {
     @Autowired
     private ProductService service;
 
+    @Autowired
+    private ProductRepository repository;
     @GetMapping
     public Flux<ProductDto> getProducts(){
         return service.getProducts();
     }
 
     @GetMapping("/{id}")
-    public Mono<ProductDto> getProduct(@PathVariable String id){
-        return service.getProduct(id);
+    public ResponseEntity<Mono<Product>> getProduct(@PathVariable String id){
+        Mono<Product> product = repository.findById(id).switchIfEmpty(
+               Mono.error(new ResourceNotFoundException("product not found with Id: " + id)));
+        return new ResponseEntity<>(product, HttpStatus.OK);
     }
 
     @GetMapping("/product-range")
@@ -30,7 +40,7 @@ public class ProductController {
     }
 
     @PostMapping
-    public Mono<ProductDto> saveProduct(@RequestBody Mono<ProductDto> productDtoMono){
+    public Mono<ProductDto> saveProduct(@Valid  @RequestBody Mono<ProductDto> productDtoMono){
         System.out.println("controller method called ...");
         return service.saveProduct(productDtoMono);
     }
@@ -44,8 +54,6 @@ public class ProductController {
     public Mono<Void> deleteProduct(@PathVariable String id){
         return service.deleteProduct(id);
     }
-
-
 
 }
 

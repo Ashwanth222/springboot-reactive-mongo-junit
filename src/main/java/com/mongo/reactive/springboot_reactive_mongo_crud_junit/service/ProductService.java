@@ -1,6 +1,8 @@
 package com.mongo.reactive.springboot_reactive_mongo_crud_junit.service;
 
 import com.mongo.reactive.springboot_reactive_mongo_crud_junit.dto.ProductDto;
+import com.mongo.reactive.springboot_reactive_mongo_crud_junit.entity.Product;
+import com.mongo.reactive.springboot_reactive_mongo_crud_junit.exception.ResourceNotFoundException;
 import com.mongo.reactive.springboot_reactive_mongo_crud_junit.repository.ProductRepository;
 import com.mongo.reactive.springboot_reactive_mongo_crud_junit.utils.AppUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +22,9 @@ public class ProductService {
         return repository.findAll().map(AppUtils::entityToDto);
     }
 
-    public Mono<ProductDto> getProduct(String id){
-        return repository.findById(id).map(AppUtils::entityToDto);
+    public Mono<Product> getProduct(String id){
+        return repository.findById(id)
+                .switchIfEmpty(Mono.error(new ResourceNotFoundException("product not found with Id: " + id)));
     }
 
     public Flux<ProductDto> getProductInRange(double min,double max){
