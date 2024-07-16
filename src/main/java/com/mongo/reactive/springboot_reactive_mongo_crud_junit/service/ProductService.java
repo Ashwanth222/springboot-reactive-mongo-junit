@@ -33,9 +33,11 @@ public class ProductService {
 
     public Mono<ProductDto> saveProduct(Mono<ProductDto> productDtoMono){
         System.out.println("service method called ...");
-        return  productDtoMono.map(AppUtils::dtoToEntity)
-                .flatMap(repository::insert)
-                .map(AppUtils::entityToDto);
+        return productDtoMono
+                .doOnNext(System.out::println);
+//        return  productDtoMono.map(AppUtils::dtoToEntity)
+//                .flatMap(repository::insert)
+//                .map(AppUtils::entityToDto);
     }
 
     public Mono<ProductDto> updateProduct(Mono<ProductDto> productDtoMono, String id){
@@ -48,6 +50,7 @@ public class ProductService {
     }
 
     public Mono<Void> deleteProduct(String id){
+
         return repository.deleteById(id);
     }
 }

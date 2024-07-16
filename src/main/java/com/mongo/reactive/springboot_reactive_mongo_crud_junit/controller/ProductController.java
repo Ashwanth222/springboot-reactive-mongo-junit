@@ -30,7 +30,7 @@ public class ProductController {
     @GetMapping("/{id}")
     public ResponseEntity<Mono<Product>> getProduct(@PathVariable String id){
         Mono<Product> product = repository.findById(id).switchIfEmpty(
-               Mono.error(new ResourceNotFoundException("product not found with Id: " + id)));
+                Mono.error(new ResourceNotFoundException("product not found with Id: " + id)));
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
 

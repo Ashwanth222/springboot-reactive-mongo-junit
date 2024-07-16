@@ -36,7 +36,7 @@ import static org.mockito.Mockito.when;
 
 		@Test
 		public void addProductTest(){
-			Mono<ProductDto> productDtoMono=Mono.just(new ProductDto("102","mobile",1,10000));
+			Mono<ProductDto> productDtoMono=Mono.just(new ProductDto("102","mobile",1,"email@gamil.com",10000));
 			when(service.saveProduct(productDtoMono)).thenReturn(productDtoMono);
 
 			webTestClient.post().uri("/products")
@@ -94,7 +94,7 @@ import static org.mockito.Mockito.when;
 
 		@Test
 		public void updateProductTest(){
-			Mono<ProductDto> productDtoMono=Mono.just(new ProductDto("102","mobile",1,10000));
+			Mono<ProductDto> productDtoMono=Mono.just(new ProductDto("102","mobile",1,"email@gmail.com", 10000));
 			Mono<Product> product=Mono.just(new Product("102","mobile",1,10000));
 
 			when(service.updateProduct(productDtoMono,"102")).thenReturn(productDtoMono);
